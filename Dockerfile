@@ -1,16 +1,17 @@
 FROM debian:bullseye-slim
 
 # Install required tools
-RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y curl unzip && rm -rf /var/lib/apt/lists/*
 
-# Download RustDesk server binaries (executable files)
-RUN curl -L https://github.com/rustdesk/rustdesk-server/releases/latest/download/hbbs-linux-amd64 -o hbbs \
- && curl -L https://github.com/rustdesk/rustdesk-server/releases/latest/download/hbbr-linux-amd64 -o hbbr \
- && chmod +x hbbs hbbr
+# Download and extract RustDesk server binaries
+RUN curl -L https://github.com/rustdesk/rustdesk-server/releases/download/1.1.14/rustdesk-server-linux-amd64.zip -o rustdesk-server.zip \
+ && unzip rustdesk-server.zip \
+ && chmod +x hbbs hbbr \
+ && rm rustdesk-server.zip
 
-# Expose ports Render supports
+# Expose ports (80 for relay, 443 for ID server)
 EXPOSE 80
 EXPOSE 443
 
-# Run both services: hbbs (ID server) on 443, hbbr (Relay) on 80
+# Run hbbs on 443 (ID) and hbbr on 80 (Relay)
 CMD ["sh", "-c", "./hbbs -p 443 & ./hbbr -p 80"]
