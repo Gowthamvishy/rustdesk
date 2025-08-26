@@ -12,9 +12,9 @@ RUN curl -L https://github.com/rustdesk/rustdesk-server/releases/download/1.1.14
  && chmod +x hbbs hbbr rustdesk-utils \
  && rm -rf rustdesk-server.zip amd64
 
-# Expose ports (80 for relay, 443 for ID server)
+# Expose only Render-allowed ports
 EXPOSE 80
 EXPOSE 443
 
-# Run hbbs on 443 (ID) and hbbr on 80 (Relay)
-CMD ["sh", "-c", "./hbbs -p 443 & ./hbbr -p 80"]
+# Run both servers on allowed ports
+CMD ["sh", "-c", "./hbbs -p 443 & ./hbbr -p 80 & wait"]
